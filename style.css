@@ -1,15 +1,3 @@
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  background: #f9f9f9;
-  overscroll-behavior: none;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-}
-
 body {
   font-family: 'Apple SD Gothic Neo', sans-serif;
   padding: 20px;
