@@ -3,62 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <title>가까운 택배회사 찾기 (Kakao Map)</title>
-  <style>
-    body { font-family: sans-serif; padding: 20px; }
-    input { width: 300px; padding: 8px; }
-    button { padding: 8px 16px; margin-left: 8px; }
-    .item { padding: 10px; border: 1px solid #ccc; margin-bottom: 8px; cursor: pointer; }
-    .item:hover { background: #f0f0f0; }
-
-    .map-container {
-      display: flex;
-      gap: 20px;
-      margin-top: 20px;
-    }
-
-    #map {
-      flex: 1;
-      height: 500px;
-      min-width: 60%;
-    }
-
-    .result-wrapper {
-      width: 35%;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .result-title {
-      font-weight: bold;
-      font-size: 18px;
-      margin-bottom: 10px;
-      opacity: 0;
-      height: 0;
-      transition: opacity 0.5s ease, height 0.5s ease;
-      overflow: hidden;
-    }
-
-    .result-title.visible {
-      opacity: 1;
-      height: 24px;
-    }
-
-    #resultList {
-      overflow-y: auto;
-      max-height: 480px;
-      border-top: 1px solid #ddd;
-      padding-top: 10px;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <h2>주소 입력 → 가까운 반납지 TOP 10</h2>
   <input type="text" id="address" placeholder="주소 입력">
   <button onclick="findNearest()">검색</button>
+  <button onclick="useGPS()">📍 현재 위치로 찾기</button>
 
   <div class="map-container">
     <div id="map"></div>
-
     <div class="result-wrapper">
       <h3 class="result-title" id="resultTitle">가까운 택배회사 TOP 10</h3>
       <div id="resultList"></div>
@@ -66,137 +20,6 @@
   </div>
 
   <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=f47b78b2a139b7dee0665fb50f1ae68b&libraries=services"></script>
-  <script>
-    let map, userMarker;
-    let courierMarkers = [];
-    let courierList = [];
-
-    async function initMap() {
-      map = new kakao.maps.Map(document.getElementById("map"), {
-        center: new kakao.maps.LatLng(37.5665, 126.9780),
-        level: 7
-      });
-
-      const res = await fetch('addressList.json');
-      courierList = await res.json();
-    }
-
-    function findNearest() {
-      const address = document.getElementById("address").value;
-      const titleEl = document.getElementById("resultTitle");
-      if (!address.trim()) {
-        titleEl.classList.remove("visible");
-        return alert("주소를 입력해주세요!");
-      }
-
-      const geocoder = new kakao.maps.services.Geocoder();
-      geocoder.addressSearch(address, function(result, status) {
-        if (status === kakao.maps.services.Status.OK) {
-          const userLat = parseFloat(result[0].y);
-          const userLng = parseFloat(result[0].x);
-          const userLoc = new kakao.maps.LatLng(userLat, userLng);
-
-          if (userMarker) userMarker.setMap(null);
-
-          const userIcon = new kakao.maps.MarkerImage(
-            'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png',
-            new kakao.maps.Size(40, 42),
-            { offset: new kakao.maps.Point(20, 42) }
-          );
-
-          userMarker = new kakao.maps.Marker({
-            map,
-            position: userLoc,
-            title: "내 위치",
-            image: userIcon // ✅ 빨간 핀 적용
-          });
-
-          const ranked = courierList.map(c => {
-            const dist = getDistance(userLat, userLng, c.lat, c.lng);
-            return { ...c, distance: dist };
-          }).sort((a, b) => a.distance - b.distance).slice(0, 10);
-
-          titleEl.classList.add("visible"); // ✅ 제목 보여주기
-
-          renderList(ranked);
-          showMarkers(ranked);
-          map.setCenter(userLoc);
-        } else {
-          titleEl.classList.remove("visible"); // ❌ 실패 시 제목 숨김
-          alert("주소를 찾을 수 없습니다.");
-        }
-      });
-    }
-
-    function renderList(items) {
-      const listDiv = document.getElementById("resultList");
-      listDiv.innerHTML = "";
-      items.forEach((item, i) => {
-        const div = document.createElement("div");
-        div.className = "item";
-        div.innerHTML = `
-          <strong>${i + 1}. 지점명: ${item.name}</strong><br>
-          택배사: ${item.category}<br>
-          주소: ${item.address}<br>
-          거리: ${item.distance.toFixed(2)} km
-        `;
-        div.onclick = () => {
-          const moveLoc = new kakao.maps.LatLng(item.lat, item.lng);
-          map.panTo(moveLoc);
-        };
-        listDiv.appendChild(div);
-      });
-    }
-
-    let openInfoWindow = null; // 전역 변수로 현재 열린 인포윈도우 추적
-
-    function showMarkers(list) {
-      courierMarkers.forEach(m => m.setMap(null));
-      courierMarkers = [];
-
-      list.forEach(c => {
-        const marker = new kakao.maps.Marker({
-          map,
-          position: new kakao.maps.LatLng(c.lat, c.lng),
-          title: c.name
-        });
-
-        const infoWindow = new kakao.maps.InfoWindow({
-          content: `<div style="padding:5px;font-size:14px;">${c.name}</div>`
-        });
-
-        // 마커 클릭 시 인포윈도우 열기 (하나만 유지)
-        kakao.maps.event.addListener(marker, 'click', () => {
-          if (openInfoWindow) {
-            openInfoWindow.close();
-          }
-          infoWindow.open(map, marker);
-          openInfoWindow = infoWindow;
-        });
-
-        courierMarkers.push(marker);
-      });
-
-      // 지도 클릭 시 열려 있는 인포윈도우 닫기
-      kakao.maps.event.addListener(map, 'click', () => {
-        if (openInfoWindow) {
-          openInfoWindow.close();
-          openInfoWindow = null;
-        }
-      });
-    }
-
-    function getDistance(lat1, lon1, lat2, lon2) {
-      const R = 6371;
-      const dLat = (lat2 - lat1) * Math.PI / 180;
-      const dLon = (lon2 - lon1) * Math.PI / 180;
-      const a = Math.sin(dLat / 2) ** 2 +
-                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                Math.sin(dLon / 2) ** 2;
-      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    }
-
-    window.onload = initMap;
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
