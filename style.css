@@ -1,34 +1,24 @@
 html, body {
+  height: 100%;
   margin: 0;
   padding: 0;
-  height: 100%;
   background: #f9f9f9;
   overscroll-behavior: none;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   touch-action: manipulation;
-}
-
-body::-webkit-scrollbar {
-  display: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
   font-family: 'Apple SD Gothic Neo', sans-serif;
   padding: 20px;
-  margin: 0;
   box-sizing: border-box;
-  background: #f9f9f9;
 }
 
 h2 {
   font-size: 20px;
   margin-bottom: 12px;
-}
-
-input, button {
-  font-size: 16px;
-  margin-bottom: 10px;
 }
 
 .input-wrapper {
@@ -44,6 +34,7 @@ input[type="text"] {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
+  font-size: 16px;
 }
 
 button {
@@ -52,24 +43,13 @@ button {
   border-radius: 6px;
   background-color: #3478ff;
   color: white;
+  font-size: 16px;
   cursor: pointer;
   transition: background 0.3s;
 }
+
 button:hover {
   background-color: #265ed4;
-}
-
-.item {
-  background: white;
-  border-radius: 8px;
-  padding: 12px;
-  border: 1px solid #eee;
-  margin-bottom: 10px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  cursor: pointer;
-}
-.item:hover {
-  background: #f1f1f1;
 }
 
 .map-container {
@@ -115,6 +95,21 @@ button:hover {
   padding-top: 10px;
 }
 
+.item {
+  background: white;
+  border-radius: 8px;
+  padding: 12px;
+  border: 1px solid #eee;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.item:hover {
+  background: #f1f1f1;
+}
+
 @media (max-width: 768px) {
   body {
     padding: 12px;
@@ -124,14 +119,9 @@ button:hover {
     flex-direction: column;
   }
 
-  input[type="text"] {
-    width: 100%;
-    font-size: 16px;
-  }
-
+  input[type="text"],
   button {
     width: 100%;
-    font-size: 16px;
   }
 
   .map-container {
@@ -150,11 +140,5 @@ button:hover {
 
   .result-title {
     font-size: 16px;
-    margin-bottom: 6px;
-  }
-
-  .item {
-    font-size: 14px;
-    padding: 10px;
   }
 }
