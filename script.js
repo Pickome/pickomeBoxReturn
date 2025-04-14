@@ -88,7 +88,7 @@ function renderList(items) {
     div.className = "item";
     div.innerHTML = `
       <strong>${i + 1}. 지점명: ${item.name}</strong><br>
-      택배사: ${item.company}<br>
+      택배사: ${item.category}<br>
       주소: ${item.address}<br>
       거리: ${item.distance.toFixed(2)} km
     `;
