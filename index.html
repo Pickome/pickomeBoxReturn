@@ -2,15 +2,23 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="mobile-web-app-capable" content="yes">
+
   <title>가까운 택배회사 찾기 (Kakao Map)</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <h2>주소 입력 → 가까운 반납지 TOP 10</h2>
-  <input type="text" id="address" placeholder="주소 입력">
-  <button onclick="findNearest()">검색</button>
-  <button onclick="useGPS()">📍 현재 위치로 찾기</button>
-
+  <div class="input-wrapper">
+    <input type="text" id="address" placeholder="주소 입력">
+    <button onclick="findNearest()">검색</button>
+    <button onclick="useGPS()">📍 현재 위치로 찾기</button>
+  </div>
+  
   <div class="map-container">
     <div id="map"></div>
     <div class="result-wrapper">
