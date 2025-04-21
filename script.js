@@ -93,6 +93,34 @@ function renderList(items) {
       거리: ${item.distance.toFixed(2)} km
     `;
     div.onclick = () => {
+      // Copy address to clipboard
+      navigator.clipboard.writeText(item.address).then(() => {
+        // Create and show notification
+        const notification = document.createElement('div');
+        notification.textContent = '주소가 클립보드에 복사되었습니다.';
+        notification.style.cssText = `
+          position: fixed;
+          top: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          background-color: rgba(0, 0, 0, 0.8);
+          color: white;
+          padding: 10px 20px;
+          border-radius: 5px;
+          z-index: 1000;
+          transition: opacity 0.3s ease-in-out;
+        `;
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+          notification.style.opacity = '0';
+          setTimeout(() => {
+            document.body.removeChild(notification);
+          }, 300);
+        }, 1000);
+      });
+
+      // Existing map functionality
       kakao.maps.event.trigger(courierMarkers[i], 'click');
       map.panTo(new kakao.maps.LatLng(item.lat, item.lng));
     };
